@@ -1,5 +1,6 @@
 const input = document.querySelector('#fruit');
-const suggestions = document.querySelector('.suggestions ul');
+const suggestions = document.querySelector('#fruits');
+
 
 const fruit = ['Apple', 'Apricot', 'Avocado 🥑', 'Banana', 'Bilberry', 'Blackberry', 'Blackcurrant', 'Blueberry', 'Boysenberry', 'Currant', 'Cherry', 'Coconut', 'Cranberry', 'Cucumber', 'Custard apple', 'Damson', 'Date', 'Dragonfruit', 'Durian', 'Elderberry', 'Feijoa', 'Fig', 'Gooseberry', 'Grape', 'Raisin', 'Grapefruit', 'Guava', 'Honeyberry', 'Huckleberry', 'Jabuticaba', 'Jackfruit', 'Jambul', 'Juniper berry', 'Kiwifruit', 'Kumquat', 'Lemon', 'Lime', 'Loquat', 'Longan', 'Lychee', 'Mango', 'Mangosteen', 'Marionberry', 'Melon', 'Cantaloupe', 'Honeydew', 'Watermelon', 'Miracle fruit', 'Mulberry', 'Nectarine', 'Nance', 'Olive', 'Orange', 'Clementine', 'Mandarine', 'Tangerine', 'Papaya', 'Passionfruit', 'Peach', 'Pear', 'Persimmon', 'Plantain', 'Plum', 'Pineapple', 'Pomegranate', 'Pomelo', 'Quince', 'Raspberry', 'Salmonberry', 'Rambutan', 'Redcurrant', 'Salak', 'Satsuma', 'Soursop', 'Star fruit', 'Strawberry', 'Tamarillo', 'Tamarind', 'Yuzu'];
 
@@ -11,11 +12,9 @@ function sortResults(results, inputVal) {
   let startsWithArr = [];
   let substring = [];
   for (let fruit of results) {
-    if (fruit.toLowerCase().startsWith(inputVal.toLowerCase())) {
-      startsWithArr.push(fruit)
-    } else {
-      substring.push(fruit);
-    }
+    fruit.toLowerCase().startsWith(inputVal.toLowerCase())
+        ? startsWithArr.push(fruit)
+        : substring.push(fruit)
   }
   return startsWithArr.concat(substring);
 }
@@ -41,23 +40,27 @@ function showSuggestions(results, inputVal) {
     name = name.slice(0, 3) + char + name.slice(4).toLowerCase();
 
     return (`
-      <li>
-        <button>${name}</button>
-      </li>
+      <button class="fruit-suggestion">${name}</button>
     `);
   });
 
   suggestions.innerHTML = html.length > 0
       ? html.join('')
-      : `¯\\_(ツ)_/¯ no results found`
+      : `<span class="no-results">¯\\_(ツ)_/¯ no results found</span>`
 }
 
 function useSuggestion(e) {
-  if (e.target.tagName === 'BUTTON') {
-    input.value = e.target.textContent;
-    let results = search(e.target.textContent);
-    showSuggestions(results, e.target.textContent);
-  }
+  let text = e.target.tagName === 'BUTTON'
+      ? e.target.textContent
+      : (e.target.tagName === 'B')
+          ? e.target.parentElement.textContent
+          : null
+
+  if (!text) return;
+
+  input.value = text;
+  let results = search(text);
+  showSuggestions(results, text);
 }
 
 input.addEventListener('keyup', searchHandler);
